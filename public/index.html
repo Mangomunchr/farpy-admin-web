@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Farpy — Admin</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;max-width:960px;margin:40px auto;padding:0 16px;background:#0b1020;color:#e8f0ff}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+    input,button{padding:8px 10px;border-radius:10px;border:1px solid #2a3555;background:#0f1730;color:#e8f0ff}
+    .card{background:#0f1730;border:1px solid #203050;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 20px rgba(0,0,0,0.25)}
+    h2{margin:0 0 12px 0}
+    code{background:#111a33;padding:2px 6px;border-radius:6px}
+    .ok{color:#3ad29f}.bad{color:#ff7a7a}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #1f2a44}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Farpy — Admin</h1>
+    <div>
+      <input id="token" placeholder="Admin token (paste once)"/>
+      <button onclick="save()">Save</button>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>Diag → Bunny</h2>
+    <button onclick="bunny()">Run</button>
+    <span id="bunnyStatus"></span>
+  </div>
+
+  <div class="card">
+    <h2>Latest Jobs</h2>
+    <button onclick="jobs()">Refresh</button>
+    <table id="jobs"></table>
+  </div>
+
+  <div class="card">
+    <h2>Security Events</h2>
+    <button onclick="sec()">Refresh</button>
+    <table id="sec"></table>
+  </div>
+
+<script>
+const S = {
+  get tok(){ return localStorage.getItem('farpy_admin_token') || '' },
+  set tok(v){ localStorage.setItem('farpy_admin_token', v) }
+};
+
+document.getElementById('token').value = S.tok;
+
+function save(){ S.tok = document.getElementById('token').value; alert('Saved'); }
+
+async function api(path, init={}){
+  const res = await fetch(path, { ...init, headers: { ...(init.headers||{}), Authorization: 'Bearer ' + S.tok } });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  return res.json();
+}
+
+async function bunny(){
+  const el = document.getElementById('bunnyStatus'); el.textContent = '…';
+  try {
+    const r = await api('/api/diag/bunny', { method:'POST' });
+    el.textContent = r.ok ? 'OK '+r.status+' ('+r.path+')' : 'Fail '+r.status;
+    el.className = r.ok ? 'ok' : 'bad';
+  } catch(e){
+    el.textContent = e.message; el.className = 'bad';
+  }
+}
+
+function renderRows(rows){
+  if(!rows || rows.length===0) return '<tr><td>None</td></tr>';
+  const keys = Object.keys(rows[0]);
+  let html = '<tr>'+keys.map(k=>'<th>'+k+'</th>').join('')+'</tr>';
+  for(const r of rows){
+    html += '<tr>'+keys.map(k=>'<td>'+r[k]+'</td>').join('')+'</tr>';
+  }
+  return html;
+}
+
+async function jobs(){
+  const t = document.getElementById('jobs'); t.innerHTML='…';
+  try{ const r = await api('/api/jobs'); t.innerHTML = renderRows(r); }catch(e){ t.innerHTML='<tr><td>'+e.message+'</td></tr>'; }
+}
+async function sec(){
+  const t = document.getElementById('sec'); t.innerHTML='…';
+  try{ const r = await api('/api/security'); t.innerHTML = renderRows(r); }catch(e){ t.innerHTML='<tr><td>'+e.message+'</td></tr>'; }
+}
+</script>
+</body>
+</html>

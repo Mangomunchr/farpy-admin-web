@@ -3,18 +3,18 @@ services:
     name: farpy-admin-web
     env: node
     plan: free
-    buildCommand: "npm ci"
-    startCommand: "npm start"
+    buildCommand: "npm install"
+    startCommand: "node server.js"
     envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: PORT
+        value: 4000
       - key: ADMIN_API_TOKEN
         sync: false
-      - key: SUPABASE_URL
+      - key: LINK_SIGNING_SECRET
         sync: false
-      - key: SUPABASE_SERVICE_KEY
+      - key: BUNNY_PULL_BASE
         sync: false
-      - key: BUNNY_STORAGE_ZONE
-        sync: false
-      - key: BUNNY_STORAGE_HOST
-        value: "storage.bunnycdn.com"
-      - key: BUNNY_API_KEY
+      - key: PUBLIC_BASE
         sync: false

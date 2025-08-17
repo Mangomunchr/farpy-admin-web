@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Farpy — Live Ops</title>
+  <link rel="stylesheet" href="/dashboard.css"/>
+</head>
+<body>
+  <header>
+    <h1>Farpy — Live Ops</h1>
+    <div id="status-dot" class="dot"></div>
+  </header>
+
+  <section class="grid">
+    <div class="card">
+      <h2>Summary</h2>
+      <div id="summary" class="kpis"></div>
+    </div>
+
+    <div class="card">
+      <h2>Farpy Users (last 100)</h2>
+      <div class="table-wrap"><table id="farpyEvents"><thead><tr>
+        <th>When</th><th>User</th><th>Job</th><th>Stage</th><th>Status</th><th>Bytes</th><th>Note</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <div class="card">
+      <h2>NodeMunchers (last 100)</h2>
+      <div class="table-wrap"><table id="nodeEvents"><thead><tr>
+        <th>When</th><th>Node</th><th>Job</th><th>Stage</th><th>Status</th><th>Bytes</th><th>Note</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <footer>
+    <span id="lastRefresh">—</span>
+  </footer>
+
+  <script src="/dashboard.js"></script>
+</body>
+</html>
